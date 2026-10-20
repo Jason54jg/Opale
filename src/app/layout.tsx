@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Source_Sans_3 } from "next/font/google";
+import { PageBackground } from "@/components/PageBackground";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
 
@@ -50,7 +51,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${display.variable} ${body.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--fg)]">
+      <body className="relative min-h-full flex flex-col bg-[var(--bg-deep)] text-[var(--fg)]">
+        <PageBackground />
         <Providers>{children}</Providers>
       </body>
     </html>
