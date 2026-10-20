@@ -5,6 +5,7 @@ import { Menu, Phone, X } from "lucide-react";
 import { BUSINESS } from "@/data/menu";
 import { useI18n } from "@/i18n/context";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { OpenStatusBadge } from "./OpenStatusBadge";
 
 const LINKS = [
   { href: "#menu", key: "nav.menu" },
@@ -33,15 +34,18 @@ export function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <a href="#top" className="group flex items-baseline gap-2">
-          <span className="font-[family-name:var(--font-display)] text-2xl tracking-wide text-[var(--fg)] transition-colors group-hover:text-[var(--accent)]">
-            OPALE
-          </span>
-          <span className="hidden text-[10px] uppercase tracking-[0.2em] text-[var(--fg-muted)] sm:inline">
-            {BUSINESS.since}
-          </span>
-        </a>
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <a href="#top" className="group flex shrink-0 items-baseline gap-2">
+            <span className="font-[family-name:var(--font-display)] text-2xl tracking-wide text-[var(--fg)] transition-colors group-hover:text-[var(--accent)]">
+              OPALE
+            </span>
+            <span className="hidden text-[10px] uppercase tracking-[0.2em] text-[var(--fg-muted)] sm:inline">
+              {BUSINESS.since}
+            </span>
+          </a>
+          <OpenStatusBadge />
+        </div>
 
         <div className="hidden items-center gap-8 md:flex">
           {LINKS.map((link) => (
@@ -79,6 +83,9 @@ export function Navbar() {
 
       {open && (
         <div className="border-t border-[var(--border)] bg-[var(--bg)]/98 px-4 py-4 backdrop-blur-md md:hidden">
+          <div className="mb-3">
+            <OpenStatusBadge showDetail />
+          </div>
           <div className="flex flex-col gap-3">
             {LINKS.map((link) => (
               <a

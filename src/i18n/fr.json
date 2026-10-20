@@ -4,7 +4,11 @@
     "reviews": "Avis",
     "homemade": "Fait maison",
     "contact": "Contact",
-    "call": "Appeler"
+    "call": "Appeler",
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "until": "jusqu’à {time}",
+    "opensAt": "ouvre à {time}"
   },
   "hero": {
     "brand": "Opale",
