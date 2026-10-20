@@ -1,11 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Star } from "lucide-react";
-import { useMemo } from "react";
+import { ExternalLink, RefreshCw, Star } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { GOOGLE_REVIEWS } from "@/data/reviews";
 import type { LiveGoogleRating, LiveReview } from "@/lib/googleRating";
 import { useI18n } from "@/i18n/context";
+
+const REFRESH_MS = 30 * 60 * 1000;
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 function Stars({ value }: { value: number }) {
   const filled = Math.round(value);
@@ -43,17 +46,48 @@ function fallbackState(): LiveGoogleRating {
   };
 }
 
-type Props = {
-  /** Avis récupérés au build (export statique / GitHub Pages). */
-  initialData?: LiveGoogleRating | null;
-};
-
-export function ReviewsSection({ initialData }: Props) {
+export function ReviewsSection() {
   const { t, locale } = useI18n();
-  const live = useMemo(
-    () => initialData ?? fallbackState(),
-    [initialData],
-  );
+  const [live, setLive] = useState<LiveGoogleRating>(fallbackState);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const load = useCallback(async (manual = false) => {
+    if (manual) setRefreshing(true);
+    try {
+      const res = await fetch(`${BASE_PATH}/api/google-rating`, {
+        cache: "no-store",
+      });
+      if (!res.ok) return;
+      const data = (await res.json()) as LiveGoogleRating;
+      if (typeof data.rating === "number" && typeof data.count === "number") {
+        setLive({
+          ...data,
+          reviews: Array.isArray(data.reviews)
+            ? data.reviews
+            : fallbackState().reviews,
+        });
+      }
+    } catch {
+      // keep previous / fallback
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+    const id = window.setInterval(() => void load(), REFRESH_MS);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [load]);
 
   const updatedLabel = live.updatedAt
     ? new Intl.DateTimeFormat(locale === "fr" ? "fr-FR" : "en-GB", {
@@ -78,7 +112,9 @@ export function ReviewsSection({ initialData }: Props) {
             <p className="section-sub">{t("reviews.subtitle")}</p>
             <p className="mt-3 text-xs text-[var(--fg-muted)]">
               {t("reviews.liveNote")}
-              {` — ${t("reviews.updated", { date: updatedLabel })}`}
+              {loading
+                ? ` — ${t("reviews.loading")}`
+                : ` — ${t("reviews.updated", { date: updatedLabel })}`}
             </p>
           </div>
 
@@ -93,6 +129,18 @@ export function ReviewsSection({ initialData }: Props) {
                   {t("reviews.count", { count: String(live.count) })}
                 </p>
               </div>
+              <button
+                type="button"
+                onClick={() => void load(true)}
+                disabled={refreshing}
+                className="ml-2 rounded-full border border-[var(--border)] p-2 text-[var(--fg-muted)] transition-colors hover:text-[var(--fg)] disabled:opacity-50"
+                aria-label={t("reviews.refresh")}
+                title={t("reviews.refresh")}
+              >
+                <RefreshCw
+                  className={`size-4 ${refreshing ? "animate-spin" : ""}`}
+                />
+              </button>
             </div>
           </div>
         </header>
@@ -149,6 +197,17 @@ export function ReviewsSection({ initialData }: Props) {
             {t("reviews.seeAll")}
             <ExternalLink className="size-4" aria-hidden />
           </a>
+          <button
+            type="button"
+            onClick={() => void load(true)}
+            className="btn-ghost"
+            disabled={refreshing}
+          >
+            <RefreshCw
+              className={`size-4 ${refreshing ? "animate-spin" : ""}`}
+            />
+            {t("reviews.refresh")}
+          </button>
         </div>
       </div>
     </section>

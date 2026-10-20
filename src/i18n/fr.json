@@ -33,7 +33,7 @@
     "subtitle": "Note et nombre d’avis synchronisés avec Google — ils montent ou descendent automatiquement.",
     "count": "{count} avis Google",
     "seeAll": "Voir tous les avis sur Google",
-    "liveNote": "Note + avis Google récupérés au déploiement (sans clé API)",
+    "liveNote": "Note + avis Google récupérés automatiquement (sans clé API), sync toutes les 30 min",
     "loading": "récupération des avis…",
     "updated": "dernière sync {date}",
     "refresh": "Actualiser",

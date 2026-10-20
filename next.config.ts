@@ -1,15 +1,17 @@
 import type { NextConfig } from "next";
 
-/** Déploiement GitHub Pages : https://jason54jg.github.io/Opale/ */
+/** Hébergement temporaire : https://jason54jg.github.io/Opale/ */
 const repoName = "Opale";
 const isGithubPages = process.env.GITHUB_PAGES === "true";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  trailingSlash: true,
-  images: { unoptimized: true },
+  // Export statique uniquement pour Pages (temporaire).
+  // En local / Vercel : serveur + API `/api/google-rating` live.
   ...(isGithubPages
     ? {
+        output: "export" as const,
+        trailingSlash: true,
+        images: { unoptimized: true },
         basePath: `/${repoName}`,
         assetPrefix: `/${repoName}/`,
       }

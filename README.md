@@ -22,24 +22,21 @@ Ouvrir [http://localhost:3000](http://localhost:3000).
 
 Les plats, prix et options du menu sont strictement ceux du menu officiel (voir `src/data/menu.ts`). Les traductions FR/EN sont dans `src/i18n/`.
 
+Les avis Google sont live via `/api/google-rating` (refresh auto toutes les 30 min).
+
 ## Scripts
 
-- `npm run dev` — développement
-- `npm run build` — export statique (`out/`)
+- `npm run dev` — développement (API live)
+- `npm run build` — build serveur (API live avec `npm start`)
+- `npm run start` — serveur production
 - `npm run lint` — ESLint
 
-## Déploiement (GitHub Pages)
+## Déploiement temporaire (GitHub Pages)
 
-Le site est exporté en statique et déployé automatiquement sur push `main` via `.github/workflows/deploy-pages.yml`.
+Export statique uniquement si `GITHUB_PAGES=true` (workflow `.github/workflows/deploy-pages.yml`).
 
 URL : [https://jason54jg.github.io/Opale/](https://jason54jg.github.io/Opale/)
 
 Sur GitHub → **Settings → Pages** → Source : **GitHub Actions**.
 
-Build local pour Pages (PowerShell) :
-
-```powershell
-$env:GITHUB_PAGES="true"; npm run build
-```
-
-Les avis Google sont récupérés au moment du build (pas d’API runtime sur Pages).
+Sur Pages, l’API est figée au build (pas de serveur Node). En local / Vercel / autre hébergeur Node, les avis restent live.
