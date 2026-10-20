@@ -6,8 +6,11 @@ import { MenuSection } from "@/components/MenuSection";
 import { MobileBar } from "@/components/MobileBar";
 import { Navbar } from "@/components/Navbar";
 import { ReviewsSection } from "@/components/ReviewsSection";
+import { fetchLiveGoogleRating } from "@/lib/googleRating";
 
-export default function Home() {
+export default async function Home() {
+  const googleRating = await fetchLiveGoogleRating();
+
   return (
     <>
       <Navbar />
@@ -15,7 +18,7 @@ export default function Home() {
         <Hero />
         <MenuSection />
         <HomemadeSection />
-        <ReviewsSection />
+        <ReviewsSection initialData={googleRating} />
         <ContactSection />
       </main>
       <Footer />

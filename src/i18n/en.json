@@ -33,7 +33,7 @@
     "subtitle": "Rating and review count synced with Google — they rise or fall automatically.",
     "count": "{count} Google reviews",
     "seeAll": "See all reviews on Google",
-    "liveNote": "Google rating + reviews fetched automatically (no API key), sync every 30 min",
+    "liveNote": "Google rating + reviews fetched at deploy time (no API key)",
     "loading": "fetching reviews…",
     "updated": "last sync {date}",
     "refresh": "Refresh",

@@ -25,6 +25,21 @@ Les plats, prix et options du menu sont strictement ceux du menu officiel (voir 
 ## Scripts
 
 - `npm run dev` — développement
-- `npm run build` — build production
-- `npm run start` — serveur production
+- `npm run build` — export statique (`out/`)
 - `npm run lint` — ESLint
+
+## Déploiement (GitHub Pages)
+
+Le site est exporté en statique et déployé automatiquement sur push `main` via `.github/workflows/deploy-pages.yml`.
+
+URL : [https://jason54jg.github.io/Opale/](https://jason54jg.github.io/Opale/)
+
+Sur GitHub → **Settings → Pages** → Source : **GitHub Actions**.
+
+Build local pour Pages (PowerShell) :
+
+```powershell
+$env:GITHUB_PAGES="true"; npm run build
+```
+
+Les avis Google sont récupérés au moment du build (pas d’API runtime sur Pages).
