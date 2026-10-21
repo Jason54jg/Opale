@@ -5,6 +5,7 @@
     "homemade": "Fait maison",
     "contact": "Contact",
     "call": "Appeler",
+    "uberEats": "Uber Eats",
     "open": "Ouvert",
     "closed": "Fermé",
     "until": "jusqu’à {time}",
@@ -16,6 +17,7 @@
     "tagline": "Kebabs & qualité fait maison à Neufchâteau",
     "award": "Élu parmi les meilleurs kebabs des Vosges et de la Lorraine (2023, 2024, 2025…)",
     "ctaMenu": "Voir le Menu",
+    "ctaUberEats": "Commander sur Uber Eats",
     "ctaTacos": "Commander au menu",
     "ctaCall": "Appeler"
   },
@@ -60,6 +62,8 @@
     "addDirect": "Ajouter tel quel, ou ajuster si besoin.",
     "close": "Fermer",
     "cartHint": "Touchez un plat dans le menu pour le composer et l’ajouter ici.",
+    "uberEatsHint": "Envie de vous faire livrer ? Commandez directement sur Uber Eats.",
+    "uberEats": "Commander sur Uber Eats",
     "listLink": "Ma liste ({count})",
     "askPrice": "Prix sur place",
     "homemade": "Fait maison",
@@ -234,6 +238,7 @@
     "services": "Sur place ou à emporter",
     "directions": "Itinéraire",
     "call": "Appeler maintenant",
+    "uberEats": "Commander sur Uber Eats",
     "monThu": "Lun. – Jeu.",
     "friSat": "Ven. – Sam.",
     "sunday": "Dimanche",
@@ -248,6 +253,7 @@
   },
   "mobile": {
     "call": "Appeler",
+    "uberEats": "Uber Eats",
     "maps": "Itinéraire"
   },
   "loading": {

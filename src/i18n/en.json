@@ -5,6 +5,7 @@
     "homemade": "Home-made",
     "contact": "Contact",
     "call": "Call",
+    "uberEats": "Uber Eats",
     "open": "Open",
     "closed": "Closed",
     "until": "until {time}",
@@ -16,6 +17,7 @@
     "tagline": "Kebabs & home-made quality in Neufchâteau",
     "award": "Voted among the best kebabs in the Vosges and Lorraine (2023, 2024, 2025…)",
     "ctaMenu": "View Menu",
+    "ctaUberEats": "Order on Uber Eats",
     "ctaTacos": "Order from the menu",
     "ctaCall": "Call Now"
   },
@@ -60,6 +62,8 @@
     "addDirect": "Add as-is, or adjust if needed.",
     "close": "Close",
     "cartHint": "Tap a dish in the menu to customize and add it here.",
+    "uberEatsHint": "Want it delivered? Order directly on Uber Eats.",
+    "uberEats": "Order on Uber Eats",
     "listLink": "My list ({count})",
     "askPrice": "Ask in store",
     "homemade": "Home-made",
@@ -234,6 +238,7 @@
     "services": "Dine-in or takeaway",
     "directions": "Directions",
     "call": "Call now",
+    "uberEats": "Order on Uber Eats",
     "monThu": "Mon – Thu",
     "friSat": "Fri – Sat",
     "sunday": "Sunday",
@@ -248,6 +253,7 @@
   },
   "mobile": {
     "call": "Call",
+    "uberEats": "Uber Eats",
     "maps": "Directions"
   },
   "loading": {

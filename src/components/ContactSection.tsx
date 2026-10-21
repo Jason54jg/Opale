@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, MapPinned, Phone, Utensils } from "lucide-react";
+import { Clock, MapPinned, Phone, ShoppingBag, Utensils } from "lucide-react";
 import { BUSINESS } from "@/data/menu";
 import { useI18n } from "@/i18n/context";
 
@@ -93,6 +93,15 @@ export function ContactSection() {
               <a href={BUSINESS.phoneHref} className="btn-primary">
                 <Phone className="size-4" />
                 {t("contact.call")}
+              </a>
+              <a
+                href={BUSINESS.uberEatsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary"
+              >
+                <ShoppingBag className="size-4" />
+                {t("contact.uberEats")}
               </a>
               <a
                 href={BUSINESS.mapsUrl}

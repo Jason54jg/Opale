@@ -497,6 +497,7 @@ export const BUSINESS = {
   phoneHref: "tel:+33329941694",
   mapsUrl:
     "https://www.google.com/maps/search/?api=1&query=38+Rue+de+France+88300+Neufch%C3%A2teau+France",
+  uberEatsUrl: "https://www.ubereats.com/store/opale/VBioMyGiU5CV2-gnFjvtrw",
   sandwichMenuExtra: 1.5,
   sauceChoice: "1 ou 2",
 } as const;

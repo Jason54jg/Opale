@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Phone } from "lucide-react";
+import { Phone, ShoppingBag } from "lucide-react";
 import { BUSINESS } from "@/data/menu";
 import { useI18n } from "@/i18n/context";
 
@@ -61,6 +61,15 @@ export function Hero() {
         >
           <a href="#menu" className="btn-primary">
             {t("hero.ctaMenu")}
+          </a>
+          <a
+            href={BUSINESS.uberEatsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary"
+          >
+            <ShoppingBag className="size-4" aria-hidden />
+            {t("hero.ctaUberEats")}
           </a>
           <a href="#menu" className="btn-secondary">
             {t("hero.ctaTacos")}

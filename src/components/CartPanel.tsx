@@ -1,7 +1,8 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { ShoppingBag, Trash2 } from "lucide-react";
 import {
+  BUSINESS,
   TACOS_EXTRAS,
   TACOS_MEATS,
   TACOS_SAUCES,
@@ -125,6 +126,19 @@ export function CartPanel({ compact = false }: { compact?: boolean }) {
           </span>
         </div>
       )}
+
+      <div className="mt-4 border-t border-[var(--border)] pt-4">
+        <p className="text-xs text-[var(--fg-muted)]">{t("menu.uberEatsHint")}</p>
+        <a
+          href={BUSINESS.uberEatsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-secondary mt-3 w-full justify-center"
+        >
+          <ShoppingBag className="size-4" aria-hidden />
+          {t("menu.uberEats")}
+        </a>
+      </div>
     </aside>
   );
 }

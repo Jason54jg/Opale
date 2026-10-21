@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu, Phone, X } from "lucide-react";
+import { Menu, Phone, ShoppingBag, X } from "lucide-react";
 import { BUSINESS } from "@/data/menu";
 import { useI18n } from "@/i18n/context";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -59,6 +59,15 @@ export function Navbar() {
           ))}
           <LanguageSwitcher />
           <a
+            href={BUSINESS.uberEatsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden items-center gap-2 whitespace-nowrap rounded-full border border-[var(--border)] px-4 py-2 text-sm font-semibold text-[var(--fg)] transition-colors lg:inline-flex hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          >
+            <ShoppingBag className="size-3.5" aria-hidden />
+            {t("nav.uberEats")}
+          </a>
+          <a
             href={BUSINESS.phoneHref}
             className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--bg)] transition-transform hover:scale-[1.02]"
           >
@@ -104,6 +113,16 @@ export function Navbar() {
             >
               <Phone className="size-4" aria-hidden />
               {t("nav.call")}
+            </a>
+            <a
+              href={BUSINESS.uberEatsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] px-4 py-3 font-semibold text-[var(--fg)]"
+              onClick={() => setOpen(false)}
+            >
+              <ShoppingBag className="size-4" aria-hidden />
+              {t("hero.ctaUberEats")}
             </a>
           </div>
         </div>
