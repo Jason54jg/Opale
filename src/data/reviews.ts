@@ -4,9 +4,12 @@ import type { LiveReview } from "@/lib/googleRating";
 export const GOOGLE_REVIEWS = {
   rating: 4.5,
   count: 290,
-  /** Page des avis Google de la fiche (place id lu dans la carte intégrée). */
-  mapsReviewsUrl:
-    "https://search.google.com/local/reviews?placeid=ChIJ0XWxu0Gz7EcRGnSOY0f4i4E&hl=fr",
+  /**
+   * Fiche Google Maps d'Opale (onglet « Avis »), via son identifiant cid.
+   * Le lien search.google.com/local/reviews redirige vers une recherche Google
+   * où la liste des avis ne s'ouvre pas.
+   */
+  mapsReviewsUrl: "https://www.google.com/maps?cid=9334827638152131610",
   items: [
     {
       id: "franck",
