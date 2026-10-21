@@ -371,9 +371,21 @@ export function computeTacosPrice(
   extras: string[],
 ): number {
   const size = TACOS_SIZES.find((s) => s.id === sizeId)!;
-  let sum = size.price;
-  if (sauces.includes("fromagere")) sum += 1;
-  sum += extras.length;
+  return size.price + computeOptionsPrice(sauces, extras);
+}
+
+/** Suppléments sauces payantes + extras, lus depuis le catalogue. */
+export function computeOptionsPrice(
+  sauces: string[],
+  extras: string[],
+): number {
+  let sum = 0;
+  for (const sauce of TACOS_SAUCES) {
+    if ("extra" in sauce && sauces.includes(sauce.id)) sum += sauce.extra;
+  }
+  for (const extra of TACOS_EXTRAS) {
+    if (extras.includes(extra.id)) sum += extra.price;
+  }
   return sum;
 }
 
@@ -474,6 +486,7 @@ export const CATEGORIES: MenuCategoryId[] = [
   "salads",
   "kids",
   "desserts",
+  "sauces",
 ];
 
 export const BUSINESS = {
@@ -502,9 +515,7 @@ export function computeSandwichPrice(
   } else if (withMenu && itemId !== "crousty") {
     sum += BUSINESS.sandwichMenuExtra;
   }
-  if (sauces.includes("fromagere")) sum += 1;
-  sum += extras.length;
-  return sum;
+  return sum + computeOptionsPrice(sauces, extras);
 }
 
 export function formatPrice(value: number, locale: "fr" | "en"): string {

@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     : {}),
   env: {
     NEXT_PUBLIC_BASE_PATH: isGithubPages ? `/${repoName}` : "",
+    NEXT_PUBLIC_STATIC_EXPORT: isGithubPages ? "true" : "",
   },
   turbopack: {
     rules: {

@@ -28,6 +28,12 @@ export function CartPanel({ compact = false }: { compact?: boolean }) {
   const { t, locale } = useI18n();
   const { items, total, removeItem, clear } = useCart();
 
+  // Numérotation propre aux tacos (indépendante des autres articles)
+  const tacosNumbers = new Map<string, number>();
+  for (const item of items) {
+    if (item.kind === "tacos") tacosNumbers.set(item.id, tacosNumbers.size + 1);
+  }
+
   return (
     <aside
       className={`rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-5 ${
@@ -55,14 +61,14 @@ export function CartPanel({ compact = false }: { compact?: boolean }) {
         </p>
       ) : (
         <ul className="mt-4 max-h-80 divide-y divide-[var(--border)] overflow-y-auto">
-          {items.map((item, index) => (
+          {items.map((item) => (
             <li key={item.id} className="flex gap-3 py-3 first:pt-0">
               <div className="min-w-0 flex-1">
                 {item.kind === "tacos" ? (
                   <>
                     <p className="font-medium text-[var(--fg)]">
                       {t("composer.tacosItem", {
-                        n: index + 1,
+                        n: tacosNumbers.get(item.id) ?? 0,
                         size: item.sizeId,
                       })}
                     </p>

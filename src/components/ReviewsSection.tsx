@@ -3,12 +3,14 @@
 import { motion } from "framer-motion";
 import { ExternalLink, RefreshCw, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { GOOGLE_REVIEWS } from "@/data/reviews";
+import { GOOGLE_REVIEWS, fallbackLiveReviews } from "@/data/reviews";
 import type { LiveGoogleRating, LiveReview } from "@/lib/googleRating";
 import { useI18n } from "@/i18n/context";
 
 const REFRESH_MS = 30 * 60 * 1000;
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+/** Export statique (GitHub Pages) : l'API est figée au build, rien à rafraîchir. */
+const IS_STATIC = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true";
 
 function Stars({ value }: { value: number }) {
   const filled = Math.round(value);
@@ -35,14 +37,7 @@ function fallbackState(): LiveGoogleRating {
     source: "cache",
     updatedAt: "",
     mapsReviewsUrl: GOOGLE_REVIEWS.mapsReviewsUrl,
-    reviews: GOOGLE_REVIEWS.items.map((item) => ({
-      id: item.id,
-      author: item.author,
-      rating: item.rating,
-      text: item.textFr,
-      source: item.source,
-      dateLabel: "",
-    })),
+    reviews: fallbackLiveReviews(),
   };
 }
 
@@ -78,6 +73,7 @@ export function ReviewsSection() {
 
   useEffect(() => {
     void load();
+    if (IS_STATIC) return;
     const id = window.setInterval(() => void load(), REFRESH_MS);
     const onVisible = () => {
       if (document.visibilityState === "visible") void load();
@@ -111,7 +107,7 @@ export function ReviewsSection() {
             <h2 className="section-title">{t("reviews.title")}</h2>
             <p className="section-sub">{t("reviews.subtitle")}</p>
             <p className="mt-3 text-xs text-[var(--fg-muted)]">
-              {t("reviews.liveNote")}
+              {t(IS_STATIC ? "reviews.snapshotNote" : "reviews.liveNote")}
               {loading
                 ? ` — ${t("reviews.loading")}`
                 : ` — ${t("reviews.updated", { date: updatedLabel })}`}
@@ -129,18 +125,20 @@ export function ReviewsSection() {
                   {t("reviews.count", { count: String(live.count) })}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => void load(true)}
-                disabled={refreshing}
-                className="ml-2 rounded-full border border-[var(--border)] p-2 text-[var(--fg-muted)] transition-colors hover:text-[var(--fg)] disabled:opacity-50"
-                aria-label={t("reviews.refresh")}
-                title={t("reviews.refresh")}
-              >
-                <RefreshCw
-                  className={`size-4 ${refreshing ? "animate-spin" : ""}`}
-                />
-              </button>
+              {!IS_STATIC && (
+                <button
+                  type="button"
+                  onClick={() => void load(true)}
+                  disabled={refreshing}
+                  className="ml-2 rounded-full border border-[var(--border)] p-2 text-[var(--fg-muted)] transition-colors hover:text-[var(--fg)] disabled:opacity-50"
+                  aria-label={t("reviews.refresh")}
+                  title={t("reviews.refresh")}
+                >
+                  <RefreshCw
+                    className={`size-4 ${refreshing ? "animate-spin" : ""}`}
+                  />
+                </button>
+              )}
             </div>
           </div>
         </header>
@@ -164,7 +162,7 @@ export function ReviewsSection() {
                 {review.dateLabel ? ` · ${review.dateLabel}` : ""}
               </p>
               <p className="mt-4 flex-1 text-sm leading-relaxed text-[var(--fg-soft)]">
-                {review.text}
+                {locale === "en" && review.textEn ? review.textEn : review.text}
               </p>
             </motion.li>
           ))}
@@ -197,17 +195,19 @@ export function ReviewsSection() {
             {t("reviews.seeAll")}
             <ExternalLink className="size-4" aria-hidden />
           </a>
-          <button
-            type="button"
-            onClick={() => void load(true)}
-            className="btn-ghost"
-            disabled={refreshing}
-          >
-            <RefreshCw
-              className={`size-4 ${refreshing ? "animate-spin" : ""}`}
-            />
-            {t("reviews.refresh")}
-          </button>
+          {!IS_STATIC && (
+            <button
+              type="button"
+              onClick={() => void load(true)}
+              className="btn-ghost"
+              disabled={refreshing}
+            >
+              <RefreshCw
+                className={`size-4 ${refreshing ? "animate-spin" : ""}`}
+              />
+              {t("reviews.refresh")}
+            </button>
+          )}
         </div>
       </div>
     </section>

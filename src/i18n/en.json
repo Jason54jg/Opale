@@ -38,6 +38,7 @@
     "count": "{count} Google reviews",
     "seeAll": "See all reviews on Google",
     "liveNote": "Google rating + reviews fetched automatically (no API key), sync every 30 min",
+    "snapshotNote": "Google rating + reviews captured at the site's last deployment",
     "loading": "fetching reviews…",
     "updated": "last sync {date}",
     "refresh": "Refresh",

@@ -1,10 +1,12 @@
-import { GOOGLE_REVIEWS } from "@/data/reviews";
+import { GOOGLE_REVIEWS, fallbackLiveReviews } from "@/data/reviews";
 
 export type LiveReview = {
   id: string;
   author: string;
   rating: number;
   text: string;
+  /** Traduction anglaise, connue seulement pour les avis de secours. */
+  textEn?: string;
   source: string;
   dateLabel: string;
 };
@@ -13,6 +15,7 @@ export type LiveGoogleRating = {
   rating: number;
   count: number;
   source: string;
+  /** ISO ; vide quand les données viennent du cache codé en dur. */
   updatedAt: string;
   mapsReviewsUrl: string;
   reviews: LiveReview[];
@@ -29,25 +32,31 @@ const BROWSER_HEADERS = {
   Referer: "https://www.google.com/",
 };
 
-function fallbackReviews(): LiveReview[] {
-  return GOOGLE_REVIEWS.items.map((item) => ({
-    id: item.id,
-    author: item.author,
-    rating: item.rating,
-    text: item.textFr,
-    source: item.source,
-    dateLabel: "",
-  }));
+export function fallbackRating(): LiveGoogleRating {
+  return {
+    rating: GOOGLE_REVIEWS.rating,
+    count: GOOGLE_REVIEWS.count,
+    source: "cache",
+    updatedAt: "",
+    mapsReviewsUrl: GOOGLE_REVIEWS.mapsReviewsUrl,
+    reviews: fallbackLiveReviews(),
+  };
 }
 
-const FALLBACK: LiveGoogleRating = {
-  rating: GOOGLE_REVIEWS.rating,
-  count: GOOGLE_REVIEWS.count,
-  source: "cache",
-  updatedAt: new Date(0).toISOString(),
-  mapsReviewsUrl: GOOGLE_REVIEWS.mapsReviewsUrl,
-  reviews: fallbackReviews(),
-};
+function starsFromWidth(html: string): number | null {
+  const match = html.match(/<span style="width:\s*([0-9.]+)%/i);
+  if (!match) return null;
+  return Math.max(1, Math.min(5, Math.round(Number(match[1]) / 20)));
+}
+
+/** Début du texte réduit aux lettres/chiffres, pour reconnaître un même avis. */
+function textKey(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[^a-z0-9]/g, "")
+    .slice(0, 40);
+}
 
 function decodeHtml(input: string): string {
   return input
@@ -128,9 +137,9 @@ export function parseRestaurantGuruReviews(html: string): LiveReview[] {
     const dateLabel = dateMatch ? cleanText(dateMatch[1]) : "";
     const isGoogle = /google/i.test(dateLabel) || /sur Google/i.test(block.slice(0, 900));
 
-    const starsMatch = block.match(/<span style="width:\s*([0-9.]+)%/i);
-    const width = starsMatch ? Number(starsMatch[1]) : 100;
-    const rating = Math.max(1, Math.min(5, Math.round(width / 20)));
+    // Sans note lisible, on ignore l'avis plutôt que d'inventer des étoiles
+    const rating = starsFromWidth(block);
+    if (rating == null) continue;
 
     let textMatch = block.match(
       /class="text_full"[^>]*>\s*<span class="text_group">([\s\S]*?)<\/span>/i,
@@ -170,12 +179,13 @@ export function parseRestaurantGuruReviews(html: string): LiveReview[] {
     for (const m of extra) {
       const author = cleanText(m[1]);
       const text = cleanText(m[2]);
-      if (!author || text.length < 12) continue;
+      const rating = starsFromWidth(m[0]);
+      if (!author || text.length < 12 || rating == null) continue;
       if (reviews.some((r) => r.author === author && r.text === text)) continue;
       reviews.push({
         id: slugId(author, reviews.length),
         author,
-        rating: 5,
+        rating,
         text,
         source: "Restaurant Guru",
         dateLabel: "",
@@ -191,6 +201,19 @@ export function parseRestaurantGuruReviews(html: string): LiveReview[] {
   });
 
   return reviews.slice(0, 6);
+}
+
+/**
+ * Écarte les pages vides ou les challenges anti-bot (Cloudflare, captcha).
+ * Test sur le <title> : les vraies pages embarquent souvent un script reCAPTCHA.
+ */
+function isUsableHtml(html: string): boolean {
+  return (
+    html.length > 5000 &&
+    !/<title>[^<]*(just a moment|attention required|captcha|access denied)/i.test(
+      html,
+    )
+  );
 }
 
 async function fetchHtmlViaCurl(url: string): Promise<string | null> {
@@ -216,7 +239,7 @@ async function fetchHtmlViaCurl(url: string): Promise<string | null> {
       { maxBuffer: 6_000_000, windowsHide: true },
     );
     const html = stdout.toString();
-    return html.length > 5000 ? html : null;
+    return isUsableHtml(html) ? html : null;
   } catch {
     return null;
   }
@@ -230,9 +253,7 @@ async function fetchHtml(url: string): Promise<string | null> {
     });
     if (res.ok) {
       const html = await res.text();
-      if (html.length > 5000 && !/just a moment|captcha|access denied/i.test(html)) {
-        return html;
-      }
+      if (isUsableHtml(html)) return html;
     }
   } catch {
     // continue to curl fallback
@@ -241,7 +262,7 @@ async function fetchHtml(url: string): Promise<string | null> {
 }
 
 export async function fetchLiveGoogleRating(): Promise<LiveGoogleRating> {
-  const updatedAt = new Date().toISOString();
+  const fallback = fallbackRating();
 
   try {
     const [rankeatHtml, guruHtml] = await Promise.all([
@@ -249,8 +270,8 @@ export async function fetchLiveGoogleRating(): Promise<LiveGoogleRating> {
       fetchHtml(RESTAURANT_GURU_URL),
     ]);
 
-    let rating = FALLBACK.rating;
-    let count = FALLBACK.count;
+    let rating = fallback.rating;
+    let count = fallback.count;
     let source = "cache";
 
     if (rankeatHtml) {
@@ -262,43 +283,46 @@ export async function fetchLiveGoogleRating(): Promise<LiveGoogleRating> {
       }
     }
 
-    let reviews = guruHtml ? parseRestaurantGuruReviews(guruHtml) : [];
+    const scraped = guruHtml ? parseRestaurantGuruReviews(guruHtml) : [];
+    if (scraped.length > 0) {
+      source =
+        source === "cache" ? "google-via-restaurant-guru" : `${source}+reviews`;
+    }
+
+    // Même avis que l'un des avis connus → reprend sa traduction anglaise
+    const reviews = scraped.map((review) => {
+      const known = fallback.reviews.find(
+        (item) =>
+          item.author === review.author &&
+          textKey(item.text) === textKey(review.text),
+      );
+      return known ? { ...review, textEn: known.textEn } : review;
+    });
 
     // Complète avec des avis Google connus s'ils manquent encore sur la page
-    for (const item of fallbackReviews()) {
-      if (reviews.some((r) => r.author === item.author)) continue;
+    for (const item of fallback.reviews) {
       if (reviews.length >= 6) break;
+      if (reviews.some((r) => r.author === item.author)) continue;
       reviews.push(item);
     }
 
-    if (reviews.length === 0) {
-      reviews = fallbackReviews();
-    } else if (source === "cache") {
-      source = "google-via-restaurant-guru";
-    } else {
-      source = `${source}+reviews`;
-    }
-
-    // Si le count Rankeat n'a pas bougé, tente une estimation Guru
-    if (source !== "cache" && count === FALLBACK.count && guruHtml) {
+    // Rankeat indisponible : nombre d'avis affiché explicitement par Guru
+    if (source === "google-via-restaurant-guru" && guruHtml) {
       const countMatch = guruHtml.match(
-        /\(([0-9]+(?:[.,][0-9]+)?)\s*\/\s*5\)[\s\S]{0,80}?([0-9]{2,4})/,
+        /\(([0-9]+(?:[.,][0-9]+)?)\s*\/\s*5\)[\s\S]{0,80}?\b([0-9]{2,5})\s*(?:avis|reviews|commentaires)\b/i,
       );
-      if (countMatch) {
-        const maybe = Number(countMatch[2]);
-        if (maybe > 50) count = maybe;
-      }
+      if (countMatch) count = Number(countMatch[2]);
     }
 
     return {
       rating,
       count,
       source,
-      updatedAt,
+      updatedAt: source === "cache" ? "" : new Date().toISOString(),
       mapsReviewsUrl: GOOGLE_REVIEWS.mapsReviewsUrl,
       reviews,
     };
   } catch {
-    return { ...FALLBACK, updatedAt, reviews: fallbackReviews() };
+    return fallback;
   }
 }

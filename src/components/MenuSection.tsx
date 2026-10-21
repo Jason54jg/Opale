@@ -18,6 +18,7 @@ import { useI18n } from "@/i18n/context";
 import { CartPanel } from "./CartPanel";
 import {
   ItemCustomizeModal,
+  customizeTargetKey,
   type CustomizeTarget,
 } from "./ItemCustomizeModal";
 import { HomemadeBadge } from "./HomemadeBadge";
@@ -34,7 +35,6 @@ export function MenuSection() {
     if (category === "tacos") return [];
     return MENU_ITEMS.filter((item) => {
       if (item.category !== category) return false;
-      if (category === "sauces") return true;
       if (!q) return true;
       const name = t(item.nameKey).toLowerCase();
       const note = item.noteKey ? t(item.noteKey).toLowerCase() : "";
@@ -283,7 +283,11 @@ export function MenuSection() {
         </div>
       </div>
 
-      <ItemCustomizeModal target={target} onClose={() => setTarget(null)} />
+      <ItemCustomizeModal
+        key={customizeTargetKey(target)}
+        target={target}
+        onClose={() => setTarget(null)}
+      />
     </section>
   );
 }

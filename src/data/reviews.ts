@@ -1,3 +1,5 @@
+import type { LiveReview } from "@/lib/googleRating";
+
 /** Fallback si le scrape public est indisponible — avis Google réels. */
 export const GOOGLE_REVIEWS = {
   rating: 4.5,
@@ -37,3 +39,16 @@ export const GOOGLE_REVIEWS = {
     },
   ],
 } as const;
+
+/** Avis de secours au format affiché (texte FR + traduction EN). */
+export function fallbackLiveReviews(): LiveReview[] {
+  return GOOGLE_REVIEWS.items.map((item) => ({
+    id: item.id,
+    author: item.author,
+    rating: item.rating,
+    text: item.textFr,
+    textEn: item.textEn,
+    source: item.source,
+    dateLabel: "",
+  }));
+}
