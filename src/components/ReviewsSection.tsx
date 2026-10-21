@@ -92,10 +92,6 @@ export function ReviewsSection() {
       }).format(new Date(live.updatedAt))
     : "—";
 
-  const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
-    "Opale, 38 Rue de France, 88300 Neufchâteau",
-  )}&hl=${locale}&z=16&output=embed`;
-
   const reviews: LiveReview[] =
     live.reviews?.length > 0 ? live.reviews : fallbackState().reviews;
 
@@ -174,18 +170,7 @@ export function ReviewsSection() {
           </p>
         )}
 
-        <div className="mt-12 overflow-hidden rounded-2xl border border-[var(--border)]">
-          <iframe
-            title={t("reviews.mapTitle")}
-            src={mapsEmbed}
-            className="h-72 w-full bg-[var(--bg-elevated)]"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            allowFullScreen
-          />
-        </div>
-
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-12 flex flex-wrap gap-3">
           <a
             href={live.mapsReviewsUrl}
             target="_blank"

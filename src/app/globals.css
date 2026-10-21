@@ -284,33 +284,16 @@ html {
   background: var(--bg-elevated);
 }
 
-.map-visual {
-  background:
-    radial-gradient(circle at 42% 48%, rgb(240 168 74 / 0.42), transparent 28%),
-    radial-gradient(circle at 58% 55%, rgb(100 55 20 / 0.55), transparent 40%),
-    linear-gradient(160deg, #221810, #0a0806 70%);
+/* Carte Google en thème sombre, accordée au fond du site */
+.map-embed {
+  border: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.map-visual::before {
-  content: "";
-  position: absolute;
-  inset: 18% 12%;
-  border: 1px dashed color-mix(in srgb, var(--accent) 40%, transparent);
-  border-radius: 40% 60% 55% 45%;
-  opacity: 0.55;
-}
-
-.map-visual::after {
-  content: "";
-  position: absolute;
-  top: 46%;
-  left: 48%;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 8px rgb(240 168 74 / 0.25);
-  transform: translate(-50%, -50%);
+.map-embed--ready {
+  opacity: 1;
+  filter: invert(0.9) hue-rotate(180deg) saturate(0.7) brightness(0.95);
 }
 
 /* ——— Splash / loading ——— */

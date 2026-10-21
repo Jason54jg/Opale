@@ -44,7 +44,6 @@
     "loading": "fetching reviews…",
     "updated": "last sync {date}",
     "refresh": "Refresh",
-    "mapTitle": "Opale on Google Maps",
     "empty": "No reviews fetched right now — check Google Maps."
   },
   "menu": {
@@ -237,6 +236,7 @@
     "servicesLabel": "Services",
     "services": "Dine-in or takeaway",
     "directions": "Directions",
+    "mapTitle": "Opale on Google Maps",
     "call": "Call now",
     "uberEats": "Order on Uber Eats",
     "monThu": "Mon – Thu",

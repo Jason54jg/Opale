@@ -1,14 +1,22 @@
 "use client";
 
 import { Clock, MapPinned, Phone, ShoppingBag, Utensils } from "lucide-react";
+import { useState } from "react";
 import { BUSINESS } from "@/data/menu";
 import { useI18n } from "@/i18n/context";
 
 export function ContactSection() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const [loadedMap, setLoadedMap] = useState("");
+
+  const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
+    BUSINESS.mapsQuery,
+  )}&hl=${locale}&z=16&output=embed`;
+  // Filtre sombre appliqué après chargement : posé avant, l'iframe lazy peut rester blanche
+  const mapReady = loadedMap === mapsEmbed;
 
   return (
-    <section id="contact" className="section-pad scroll-mt-20 bg-[var(--bg-deep)]">
+    <section id="contact" className="section-pad scroll-mt-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <header className="max-w-2xl">
           <h2 className="section-title">{t("contact.title")}</h2>
@@ -115,26 +123,19 @@ export function ContactSection() {
             </div>
           </div>
 
-          <a
-            href={BUSINESS.mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="map-panel group relative min-h-72 overflow-hidden rounded-2xl border border-[var(--border)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
-            aria-label={t("contact.directions")}
-          >
-            <div className="absolute inset-0 map-visual" aria-hidden />
-            <div className="absolute inset-0 flex flex-col items-start justify-end bg-gradient-to-t from-[var(--bg)] via-[var(--bg)]/40 to-transparent p-6">
-              <p className="font-[family-name:var(--font-display)] text-2xl tracking-wide text-[var(--fg)]">
-                Neufchâteau
-              </p>
-              <p className="mt-1 text-sm text-[var(--fg-muted)]">
-                38 Rue de France
-              </p>
-              <span className="mt-4 text-sm font-medium text-[var(--accent)] transition-transform group-hover:translate-x-1">
-                Google Maps →
-              </span>
-            </div>
-          </a>
+          <div className="map-panel relative min-h-80 overflow-hidden rounded-2xl border border-[var(--border)]">
+            <iframe
+              title={t("contact.mapTitle")}
+              src={mapsEmbed}
+              className={`map-embed absolute inset-0 h-full w-full ${
+                mapReady ? "map-embed--ready" : ""
+              }`}
+              onLoad={() => setLoadedMap(mapsEmbed)}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
         </div>
       </div>
     </section>

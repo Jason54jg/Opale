@@ -44,7 +44,6 @@
     "loading": "récupération des avis…",
     "updated": "dernière sync {date}",
     "refresh": "Actualiser",
-    "mapTitle": "Opale sur Google Maps",
     "empty": "Aucun avis récupéré pour le moment — consultez Google Maps."
   },
   "menu": {
@@ -237,6 +236,7 @@
     "servicesLabel": "Services",
     "services": "Sur place ou à emporter",
     "directions": "Itinéraire",
+    "mapTitle": "Opale sur Google Maps",
     "call": "Appeler maintenant",
     "uberEats": "Commander sur Uber Eats",
     "monThu": "Lun. – Jeu.",

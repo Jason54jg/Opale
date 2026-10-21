@@ -498,6 +498,7 @@ export const BUSINESS = {
   mapsUrl:
     "https://www.google.com/maps/search/?api=1&query=38+Rue+de+France+88300+Neufch%C3%A2teau+France",
   uberEatsUrl: "https://www.ubereats.com/store/opale/VBioMyGiU5CV2-gnFjvtrw",
+  mapsQuery: "Opale, 38 Rue de France, 88300 Neufchâteau",
   sandwichMenuExtra: 1.5,
   sauceChoice: "1 ou 2",
 } as const;
