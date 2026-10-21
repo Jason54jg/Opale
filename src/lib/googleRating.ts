@@ -1,3 +1,4 @@
+import { BUSINESS } from "@/data/menu";
 import { GOOGLE_REVIEWS, fallbackLiveReviews } from "@/data/reviews";
 
 export type LiveReview = {
@@ -9,6 +10,8 @@ export type LiveReview = {
   textEn?: string;
   source: string;
   dateLabel: string;
+  /** Ancienneté estimée en jours (absente si inconnue). */
+  ageDays?: number;
 };
 
 export type LiveGoogleRating = {
@@ -21,6 +24,13 @@ export type LiveGoogleRating = {
   reviews: LiveReview[];
 };
 
+/** Nombre d'avis affichés sur le site. */
+const REVIEWS_SHOWN = 3;
+
+/** Carte Google intégrée : contient la note et le nombre d'avis de la fiche, sans clé API. */
+const GOOGLE_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(
+  BUSINESS.mapsQuery,
+)}&hl=fr&z=16&output=embed`;
 const RANKEAT_URL = "https://rankeat.fr/restaurants/opale-neufchateau";
 const RESTAURANT_GURU_URL = "https://fr.restaurantguru.com/Opale-Neufchateau";
 
@@ -41,6 +51,56 @@ export function fallbackRating(): LiveGoogleRating {
     mapsReviewsUrl: GOOGLE_REVIEWS.mapsReviewsUrl,
     reviews: fallbackLiveReviews(),
   };
+}
+
+/** Note + nombre d'avis Google, ex. `4.5,"290 avis"` dans la carte intégrée. */
+export function parseGoogleEmbedRating(
+  html: string,
+): { rating: number; count: number } | null {
+  const match = html.match(
+    /,(\d(?:\.\d)?),"([\d\s\u00a0\u202f.,]+)\s*(?:avis|reviews)"/,
+  );
+  if (!match) return null;
+  const rating = Number(match[1]);
+  const count = Number(match[2].replace(/\D/g, ""));
+  return rating > 0 && rating <= 5 && count > 0 ? { rating, count } : null;
+}
+
+/** « 17 jours plus tôt », « il y a 3 ans », « un mois »… → jours. */
+export function parseAgeDays(label: string): number | undefined {
+  const lower = label.toLowerCase();
+  if (/aujourd/.test(lower)) return 0;
+  if (/hier/.test(lower)) return 1;
+  const match = lower.match(/(\d+|une?)\s*(minute|heure|jour|semaine|mois|an)/);
+  if (!match) return undefined;
+  const n = /^\d+$/.test(match[1]) ? Number(match[1]) : 1;
+  const unitDays: Record<string, number> = {
+    minute: 0,
+    heure: 0,
+    jour: 1,
+    semaine: 7,
+    mois: 30,
+    an: 365,
+  };
+  return n * unitDays[match[2]];
+}
+
+/**
+ * Meilleures notes d'abord, puis avis Google avant les autres sources,
+ * puis les plus récents ; date inconnue en dernier.
+ */
+export function pickLatestBest(
+  reviews: LiveReview[],
+  limit = REVIEWS_SHOWN,
+): LiveReview[] {
+  const age = (r: LiveReview) => r.ageDays ?? Number.MAX_SAFE_INTEGER;
+  const google = (r: LiveReview) => (r.source === "Google" ? 0 : 1);
+  return [...reviews]
+    .sort(
+      (a, b) =>
+        b.rating - a.rating || google(a) - google(b) || age(a) - age(b),
+    )
+    .slice(0, limit);
 }
 
 function starsFromWidth(html: string): number | null {
@@ -166,6 +226,7 @@ export function parseRestaurantGuruReviews(html: string): LiveReview[] {
       text,
       source: isGoogle ? "Google" : "Restaurant Guru",
       dateLabel,
+      ageDays: parseAgeDays(dateLabel),
     });
   }
 
@@ -207,16 +268,19 @@ export function parseRestaurantGuruReviews(html: string): LiveReview[] {
  * Écarte les pages vides ou les challenges anti-bot (Cloudflare, captcha).
  * Test sur le <title> : les vraies pages embarquent souvent un script reCAPTCHA.
  */
-function isUsableHtml(html: string): boolean {
+function isUsableHtml(html: string, minLength: number): boolean {
   return (
-    html.length > 5000 &&
+    html.length > minLength &&
     !/<title>[^<]*(just a moment|attention required|captcha|access denied)/i.test(
       html,
     )
   );
 }
 
-async function fetchHtmlViaCurl(url: string): Promise<string | null> {
+async function fetchHtmlViaCurl(
+  url: string,
+  minLength: number,
+): Promise<string | null> {
   try {
     const { execFile } = await import("node:child_process");
     const { promisify } = await import("node:util");
@@ -239,13 +303,16 @@ async function fetchHtmlViaCurl(url: string): Promise<string | null> {
       { maxBuffer: 6_000_000, windowsHide: true },
     );
     const html = stdout.toString();
-    return isUsableHtml(html) ? html : null;
+    return isUsableHtml(html, minLength) ? html : null;
   } catch {
     return null;
   }
 }
 
-async function fetchHtml(url: string): Promise<string | null> {
+async function fetchHtml(
+  url: string,
+  minLength = 5000,
+): Promise<string | null> {
   try {
     const res = await fetch(url, {
       headers: BROWSER_HEADERS,
@@ -253,19 +320,20 @@ async function fetchHtml(url: string): Promise<string | null> {
     });
     if (res.ok) {
       const html = await res.text();
-      if (isUsableHtml(html)) return html;
+      if (isUsableHtml(html, minLength)) return html;
     }
   } catch {
     // continue to curl fallback
   }
-  return fetchHtmlViaCurl(url);
+  return fetchHtmlViaCurl(url, minLength);
 }
 
 export async function fetchLiveGoogleRating(): Promise<LiveGoogleRating> {
   const fallback = fallbackRating();
 
   try {
-    const [rankeatHtml, guruHtml] = await Promise.all([
+    const [embedHtml, rankeatHtml, guruHtml] = await Promise.all([
+      fetchHtml(GOOGLE_EMBED_URL, 1000),
       fetchHtml(RANKEAT_URL),
       fetchHtml(RESTAURANT_GURU_URL),
     ]);
@@ -274,7 +342,13 @@ export async function fetchLiveGoogleRating(): Promise<LiveGoogleRating> {
     let count = fallback.count;
     let source = "cache";
 
-    if (rankeatHtml) {
+    // Source directe Google en priorité, Rankeat (souvent en retard) en secours
+    const fromGoogle = embedHtml ? parseGoogleEmbedRating(embedHtml) : null;
+    if (fromGoogle) {
+      rating = fromGoogle.rating;
+      count = fromGoogle.count;
+      source = "google-maps";
+    } else if (rankeatHtml) {
       const parsed = parseJsonLdRating(rankeatHtml);
       if (parsed) {
         rating = Math.round(parsed.rating * 10) / 10;
@@ -301,7 +375,6 @@ export async function fetchLiveGoogleRating(): Promise<LiveGoogleRating> {
 
     // Complète avec des avis Google connus s'ils manquent encore sur la page
     for (const item of fallback.reviews) {
-      if (reviews.length >= 6) break;
       if (reviews.some((r) => r.author === item.author)) continue;
       reviews.push(item);
     }
@@ -320,7 +393,7 @@ export async function fetchLiveGoogleRating(): Promise<LiveGoogleRating> {
       source,
       updatedAt: source === "cache" ? "" : new Date().toISOString(),
       mapsReviewsUrl: GOOGLE_REVIEWS.mapsReviewsUrl,
-      reviews,
+      reviews: pickLatestBest(reviews),
     };
   } catch {
     return fallback;

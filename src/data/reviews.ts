@@ -3,9 +3,10 @@ import type { LiveReview } from "@/lib/googleRating";
 /** Fallback si le scrape public est indisponible — avis Google réels. */
 export const GOOGLE_REVIEWS = {
   rating: 4.5,
-  count: 250,
+  count: 290,
+  /** Page des avis Google de la fiche (place id lu dans la carte intégrée). */
   mapsReviewsUrl:
-    "https://www.google.com/maps/search/?api=1&query=Opale+38+Rue+de+France+88300+Neufch%C3%A2teau",
+    "https://search.google.com/local/reviews?placeid=ChIJ0XWxu0Gz7EcRGnSOY0f4i4E&hl=fr",
   items: [
     {
       id: "franck",

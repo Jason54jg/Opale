@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, RefreshCw, Star } from "lucide-react";
+import { ExternalLink, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { GOOGLE_REVIEWS, fallbackLiveReviews } from "@/data/reviews";
 import type { LiveGoogleRating, LiveReview } from "@/lib/googleRating";
@@ -9,7 +9,7 @@ import { useI18n } from "@/i18n/context";
 
 const REFRESH_MS = 30 * 60 * 1000;
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-/** Export statique (GitHub Pages) : l'API est figée au build, rien à rafraîchir. */
+/** Export statique (GitHub Pages) : l'API est figée au build, regénérée par un cron. */
 const IS_STATIC = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true";
 
 function Stars({ value }: { value: number }) {
@@ -45,10 +45,8 @@ export function ReviewsSection() {
   const { t, locale } = useI18n();
   const [live, setLive] = useState<LiveGoogleRating>(fallbackState);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const load = useCallback(async (manual = false) => {
-    if (manual) setRefreshing(true);
+  const load = useCallback(async () => {
     try {
       const res = await fetch(`${BASE_PATH}/api/google-rating`, {
         cache: "no-store",
@@ -67,7 +65,6 @@ export function ReviewsSection() {
       // keep previous / fallback
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, []);
 
@@ -121,20 +118,6 @@ export function ReviewsSection() {
                   {t("reviews.count", { count: String(live.count) })}
                 </p>
               </div>
-              {!IS_STATIC && (
-                <button
-                  type="button"
-                  onClick={() => void load(true)}
-                  disabled={refreshing}
-                  className="ml-2 rounded-full border border-[var(--border)] p-2 text-[var(--fg-muted)] transition-colors hover:text-[var(--fg)] disabled:opacity-50"
-                  aria-label={t("reviews.refresh")}
-                  title={t("reviews.refresh")}
-                >
-                  <RefreshCw
-                    className={`size-4 ${refreshing ? "animate-spin" : ""}`}
-                  />
-                </button>
-              )}
             </div>
           </div>
         </header>
@@ -180,19 +163,6 @@ export function ReviewsSection() {
             {t("reviews.seeAll")}
             <ExternalLink className="size-4" aria-hidden />
           </a>
-          {!IS_STATIC && (
-            <button
-              type="button"
-              onClick={() => void load(true)}
-              className="btn-ghost"
-              disabled={refreshing}
-            >
-              <RefreshCw
-                className={`size-4 ${refreshing ? "animate-spin" : ""}`}
-              />
-              {t("reviews.refresh")}
-            </button>
-          )}
         </div>
       </div>
     </section>

@@ -3,6 +3,9 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [main]
+  # Rebuild régulier : le site statique reprend la note et les avis Google à jour
+  schedule:
+    - cron: "17 */6 * * *"
   workflow_dispatch:
 
 permissions:

@@ -40,10 +40,9 @@
     "count": "{count} avis Google",
     "seeAll": "Voir tous les avis sur Google",
     "liveNote": "Note + avis Google récupérés automatiquement (sans clé API), sync toutes les 30 min",
-    "snapshotNote": "Note + avis Google relevés à la dernière mise en ligne du site",
+    "snapshotNote": "Note et avis Google mis à jour automatiquement plusieurs fois par jour",
     "loading": "récupération des avis…",
     "updated": "dernière sync {date}",
-    "refresh": "Actualiser",
     "empty": "Aucun avis récupéré pour le moment — consultez Google Maps."
   },
   "menu": {
