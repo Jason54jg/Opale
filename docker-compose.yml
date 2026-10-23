@@ -1,0 +1,15 @@
+services:
+  opale:
+    build: .
+    image: opale
+    container_name: opale
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    mem_limit: 256m
+    # Logs plafonnés pour ne pas remplir le disque du VPS.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
