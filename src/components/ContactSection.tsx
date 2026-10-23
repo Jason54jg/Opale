@@ -34,6 +34,7 @@ export function ContactSection() {
                 <p className="mt-1 text-[var(--fg)]">{BUSINESS.address}</p>
                 <a
                   href={BUSINESS.mapsUrl}
+                  data-track="directions"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-2 inline-block text-sm text-[var(--accent)] underline-offset-4 hover:underline"
@@ -51,6 +52,7 @@ export function ContactSection() {
                 </h3>
                 <a
                   href={BUSINESS.phoneHref}
+                  data-track="call"
                   className="mt-1 block text-lg text-[var(--fg)] hover:text-[var(--accent)]"
                 >
                   {BUSINESS.phone}
@@ -98,12 +100,17 @@ export function ContactSection() {
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <a href={BUSINESS.phoneHref} className="btn-primary">
+              <a
+                href={BUSINESS.phoneHref}
+                data-track="call"
+                className="btn-primary"
+              >
                 <Phone className="size-4" />
                 {t("contact.call")}
               </a>
               <a
                 href={BUSINESS.uberEatsUrl}
+                data-track="uber-eats"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary"
@@ -113,6 +120,7 @@ export function ContactSection() {
               </a>
               <a
                 href={BUSINESS.mapsUrl}
+                data-track="directions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary"

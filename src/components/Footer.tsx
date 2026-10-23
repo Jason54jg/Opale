@@ -19,6 +19,7 @@ export function Footer() {
           <p>{t("footer.rights")}</p>
           <a
             href={BUSINESS.phoneHref}
+            data-track="call"
             className="mt-1 inline-block hover:text-[var(--accent)]"
           >
             {BUSINESS.phone}

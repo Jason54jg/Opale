@@ -212,6 +212,10 @@ export function ItemCustomizeModal({ target, onClose }: Props) {
   }
 
   const showMeats = target.type === "tacos";
+  const trackLabel =
+    target.type === "tacos"
+      ? `add-item:tacos-${target.sizeId.toLowerCase()}`
+      : `add-item:${target.item.id}`;
   const showSauces =
     target.type === "tacos" || (menuItem != null && needsSauces(menuItem));
   const showExtras =
@@ -396,6 +400,7 @@ export function ItemCustomizeModal({ target, onClose }: Props) {
           <button
             type="button"
             disabled={!valid}
+            data-track={trackLabel}
             onClick={submit}
             className="btn-primary disabled:opacity-40"
           >

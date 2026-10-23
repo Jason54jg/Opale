@@ -64,6 +64,7 @@ export function Hero() {
           </a>
           <a
             href={BUSINESS.uberEatsUrl}
+            data-track="uber-eats"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-secondary"
@@ -74,7 +75,11 @@ export function Hero() {
           <a href="#menu" className="btn-secondary">
             {t("hero.ctaTacos")}
           </a>
-          <a href={BUSINESS.phoneHref} className="btn-ghost">
+          <a
+            href={BUSINESS.phoneHref}
+            data-track="call"
+            className="btn-ghost"
+          >
             <Phone className="size-4" aria-hidden />
             {t("hero.ctaCall")}
           </a>

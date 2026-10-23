@@ -19,6 +19,7 @@ export function LanguageSwitcher() {
           <button
             key={code}
             type="button"
+            data-track={active ? undefined : `lang-switch:${code}`}
             onClick={() => setLocale(code)}
             className={`min-w-10 rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wider transition-colors ${
               active

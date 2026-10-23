@@ -131,6 +131,7 @@ export function CartPanel({ compact = false }: { compact?: boolean }) {
         <p className="text-xs text-[var(--fg-muted)]">{t("menu.uberEatsHint")}</p>
         <a
           href={BUSINESS.uberEatsUrl}
+          data-track="uber-eats"
           target="_blank"
           rel="noopener noreferrer"
           className="btn-secondary mt-3 w-full justify-center"

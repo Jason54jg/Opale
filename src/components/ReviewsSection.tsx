@@ -156,6 +156,7 @@ export function ReviewsSection() {
         <div className="mt-12 flex flex-wrap gap-3">
           <a
             href={live.mapsReviewsUrl}
+            data-track="google-reviews"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary inline-flex"

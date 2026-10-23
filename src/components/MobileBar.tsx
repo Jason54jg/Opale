@@ -12,6 +12,7 @@ export function MobileBar() {
       <div className="mx-auto grid max-w-lg grid-cols-3 gap-2">
         <a
           href={BUSINESS.phoneHref}
+          data-track="call"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-3 py-3 text-sm font-semibold text-[var(--bg)]"
         >
           <Phone className="size-4" aria-hidden />
@@ -19,6 +20,7 @@ export function MobileBar() {
         </a>
         <a
           href={BUSINESS.uberEatsUrl}
+          data-track="uber-eats"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-3 text-sm font-semibold text-[var(--fg)]"
@@ -28,6 +30,7 @@ export function MobileBar() {
         </a>
         <a
           href={BUSINESS.mapsUrl}
+          data-track="directions"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-3 text-sm font-semibold text-[var(--fg)]"

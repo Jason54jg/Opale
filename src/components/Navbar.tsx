@@ -60,6 +60,7 @@ export function Navbar() {
           <LanguageSwitcher />
           <a
             href={BUSINESS.uberEatsUrl}
+            data-track="uber-eats"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden items-center gap-2 whitespace-nowrap rounded-full border border-[var(--border)] px-4 py-2 text-sm font-semibold text-[var(--fg)] transition-colors lg:inline-flex hover:border-[var(--accent)] hover:text-[var(--accent)]"
@@ -69,6 +70,7 @@ export function Navbar() {
           </a>
           <a
             href={BUSINESS.phoneHref}
+            data-track="call"
             className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--bg)] transition-transform hover:scale-[1.02]"
           >
             <Phone className="size-3.5" aria-hidden />
@@ -108,6 +110,7 @@ export function Navbar() {
             ))}
             <a
               href={BUSINESS.phoneHref}
+              data-track="call"
               className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-4 py-3 font-semibold text-[var(--bg)]"
               onClick={() => setOpen(false)}
             >
@@ -116,6 +119,7 @@ export function Navbar() {
             </a>
             <a
               href={BUSINESS.uberEatsUrl}
+              data-track="uber-eats"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] px-4 py-3 font-semibold text-[var(--fg)]"
