@@ -5,6 +5,7 @@ import { Menu, Phone, ShoppingBag, X } from "lucide-react";
 import { BUSINESS } from "@/data/menu";
 import { useI18n } from "@/i18n/context";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { OpaleLogo } from "./OpaleLogo";
 import { OpenStatusBadge } from "./OpenStatusBadge";
 
 const LINKS = [
@@ -36,13 +37,8 @@ export function Navbar() {
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-          <a href="#top" className="group flex shrink-0 items-baseline gap-2">
-            <span className="font-[family-name:var(--font-display)] text-2xl tracking-wide text-[var(--fg)] transition-colors group-hover:text-[var(--accent)]">
-              OPALE
-            </span>
-            <span className="hidden text-[10px] uppercase tracking-[0.2em] text-[var(--fg-muted)] sm:inline">
-              {BUSINESS.since}
-            </span>
+          <a href="#top" className="shrink-0">
+            <OpaleLogo className="text-2xl text-[var(--fg)] transition-colors hover:text-[var(--accent)]" />
           </a>
           <OpenStatusBadge />
         </div>
