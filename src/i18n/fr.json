@@ -18,7 +18,6 @@
     "award": "Élu parmi les meilleurs kebabs des Vosges et de la Lorraine (2023, 2024, 2025…)",
     "ctaMenu": "Voir le Menu",
     "ctaUberEats": "Commander sur Uber Eats",
-    "ctaTacos": "Commander au menu",
     "ctaCall": "Appeler"
   },
   "composer": {
@@ -247,8 +246,9 @@
     "dinnerWeekend": "17:30 – 22:30"
   },
   "footer": {
-    "rights": "Opale Neufchâteau — Depuis 1999",
-    "tagline": "Kebabs & fait maison"
+    "rights": "© {year} Opale Neufchâteau. Tous droits réservés.",
+    "tagline": "Kebabs & fait maison",
+    "credit": "Site réalisé par Jason"
   },
   "mobile": {
     "call": "Appeler",

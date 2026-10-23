@@ -72,9 +72,6 @@ export function Hero() {
             <ShoppingBag className="size-4" aria-hidden />
             {t("hero.ctaUberEats")}
           </a>
-          <a href="#menu" className="btn-secondary">
-            {t("hero.ctaTacos")}
-          </a>
           <a
             href={BUSINESS.phoneHref}
             data-track="call"

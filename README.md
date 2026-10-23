@@ -31,6 +31,18 @@ Les avis Google sont live via `/api/google-rating` (refresh auto toutes les 30 m
 - `npm run start` — serveur production
 - `npm run lint` — ESLint
 
+## Docker
+
+Image légère pensée pour un petit VPS (2 Go RAM / 10 Go disque) : build multi-étapes, serveur Next.js `standalone`, avis Google live.
+
+```bash
+docker compose up -d --build
+```
+
+Site sur [http://localhost:3000](http://localhost:3000). Le conteneur est limité à 256 Mo de RAM (~40 Mo utilisés) et ses logs à 30 Mo.
+
+Mise à jour : `git pull && docker compose up -d --build`, puis `docker image prune -f` pour libérer le disque.
+
 ## Déploiement temporaire (GitHub Pages)
 
 Export statique uniquement si `GITHUB_PAGES=true` (workflow `.github/workflows/deploy-pages.yml`).

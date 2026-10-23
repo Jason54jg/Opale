@@ -3,8 +3,11 @@ import type { NextConfig } from "next";
 /** Hébergement temporaire : https://jason54jg.github.io/Opale/ */
 const repoName = "Opale";
 const isGithubPages = process.env.GITHUB_PAGES === "true";
+const isDocker = process.env.DOCKER === "true";
 
 const nextConfig: NextConfig = {
+  // Image Docker : serveur Node minimal (`server.js`) sans node_modules complet.
+  ...(isDocker ? { output: "standalone" as const } : {}),
   // Export statique uniquement pour Pages (temporaire).
   // En local / Vercel : serveur + API `/api/google-rating` live.
   ...(isGithubPages
