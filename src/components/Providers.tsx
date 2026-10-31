@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { CartProvider } from "@/context/CartContext";
 import { I18nProvider, useI18n } from "@/i18n/context";
 import { Analytics } from "./Analytics";
-import { LoadingScreen } from "./LoadingScreen";
 
 function LangSync({ children }: { children: React.ReactNode }) {
   const { locale } = useI18n();
@@ -22,7 +21,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <LangSync>
         <CartProvider>
           <Analytics />
-          <LoadingScreen />
           {children}
         </CartProvider>
       </LangSync>
