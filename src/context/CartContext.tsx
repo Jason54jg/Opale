@@ -2,12 +2,12 @@
 
 import {
   createContext,
-  useCallback,
   useContext,
   useMemo,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { addCartItem, clearCart, getCartSnapshot, getServerCartSnapshot, removeCartItem, subscribeCart } from "./cartStore";
 import type { TacosSizeId } from "@/data/menu";
 
 export type CartTacosItem = {
@@ -33,7 +33,7 @@ export type CartMenuItem = {
 
 export type CartItem = CartTacosItem | CartMenuItem;
 
-type NewCartItem = Omit<CartTacosItem, "id"> | Omit<CartMenuItem, "id">;
+export type NewCartItem = Omit<CartTacosItem, "id"> | Omit<CartMenuItem, "id">;
 
 type CartContextValue = {
   items: CartItem[];
@@ -46,23 +46,8 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-function makeId() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-
-  const addItem = useCallback((item: NewCartItem) => {
-    setItems((prev) => [...prev, { ...item, id: makeId() } as CartItem]);
-  }, []);
-
-  const removeItem = useCallback((id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
-  }, []);
-
-  const clear = useCallback(() => setItems([]), []);
-
+  const items = useSyncExternalStore(subscribeCart, getCartSnapshot, getServerCartSnapshot);
   const total = useMemo(
     () => items.reduce((sum, i) => sum + i.price, 0),
     [items],
@@ -73,11 +58,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items,
       total,
       count: items.length,
-      addItem,
-      removeItem,
-      clear,
+      addItem: addCartItem,
+      removeItem: removeCartItem,
+      clear: clearCart,
     }),
-    [items, total, addItem, removeItem, clear],
+    [items, total],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
