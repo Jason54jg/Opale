@@ -1,7 +1,8 @@
 "use client";
 
 import { Check, Plus, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { AccessibleDialog } from "./AccessibleDialog";
+import { useMemo, useState } from "react";
 import {
   BUSINESS,
   COMPOSABLE_ITEM_IDS,
@@ -40,9 +41,6 @@ export function customizeTargetKey(target: CustomizeTarget | null): string {
   return target.type === "tacos" ? `tacos-${target.sizeId}` : target.item.id;
 }
 
-const FOCUSABLE =
-  'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
 function isFullCompose(itemId: string) {
   return (COMPOSABLE_ITEM_IDS as readonly string[]).includes(itemId);
 }
@@ -72,54 +70,6 @@ export function ItemCustomizeModal({ target, onClose }: Props) {
   const [sauces, setSauces] = useState<string[]>([]);
   const [extras, setExtras] = useState<string[]>([]);
   const [withMenu, setWithMenu] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const onCloseRef = useRef(onClose);
-
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  const isOpen = target != null;
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const previous = document.activeElement as HTMLElement | null;
-    panelRef.current?.focus();
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onCloseRef.current();
-        return;
-      }
-      if (e.key !== "Tab" || !panelRef.current) return;
-      // Garde le focus clavier dans la fenêtre
-      const focusable = [
-        ...panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE),
-      ];
-      if (focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (
-        !e.shiftKey &&
-        (document.activeElement === last ||
-          !panelRef.current.contains(document.activeElement))
-      ) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-      previous?.focus();
-    };
-  }, [isOpen]);
-
   const tacosSize =
     target?.type === "tacos"
       ? TACOS_SIZES.find((s) => s.id === target.sizeId)!
@@ -228,16 +178,13 @@ export function ItemCustomizeModal({ target, onClose }: Props) {
     !needsExtras(menuItem);
 
   return (
-    <div
+    <AccessibleDialog
+      onClose={onClose}
       className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal
       aria-label={title}
       onClick={onClose}
     >
       <div
-        ref={panelRef}
-        tabIndex={-1}
         className="max-h-[92vh] outline-none w-full max-w-lg overflow-y-auto rounded-t-2xl border border-[var(--border)] bg-[var(--bg)] p-5 sm:rounded-2xl sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
@@ -419,7 +366,7 @@ export function ItemCustomizeModal({ target, onClose }: Props) {
           </p>
         )}
       </div>
-    </div>
+    </AccessibleDialog>
   );
 }
 
