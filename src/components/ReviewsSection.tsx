@@ -69,7 +69,8 @@ export function ReviewsSection() {
   }, []);
 
   useEffect(() => {
-    void load();
+    // Démarrer la récupération après la phase synchrone de l’effet.
+    void Promise.resolve().then(load);
     if (IS_STATIC) return;
     const id = window.setInterval(() => void load(), REFRESH_MS);
     const onVisible = () => {

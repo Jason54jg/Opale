@@ -330,6 +330,7 @@ async function fetchHtml(
 
 export async function fetchLiveGoogleRating(): Promise<LiveGoogleRating> {
   const fallback = fallbackRating();
+  if (process.env.SKIP_LIVE_REVIEWS === "1") return fallback;
 
   try {
     const [embedHtml, rankeatHtml, guruHtml] = await Promise.all([
