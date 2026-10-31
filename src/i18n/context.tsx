@@ -5,9 +5,10 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { getLocaleSnapshot, getServerLocaleSnapshot, setStoredLocale, subscribeLocale } from "./localeStore";
 import en from "./en.json";
 import fr from "./fr.json";
 
@@ -33,7 +34,7 @@ function getByPath(obj: unknown, path: string): unknown {
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("fr");
+  const locale = useSyncExternalStore(subscribeLocale, getLocaleSnapshot, getServerLocaleSnapshot);
 
   const t = useCallback(
     (path: string, vars?: Record<string, string | number>) => {
@@ -49,7 +50,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     [locale],
   );
 
-  const value = useMemo(() => ({ locale, setLocale, t }), [locale, t]);
+  const value = useMemo(() => ({ locale, setLocale: setStoredLocale, t }), [locale, t]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
